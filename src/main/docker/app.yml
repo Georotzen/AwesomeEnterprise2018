@@ -1,0 +1,39 @@
+version: '2'
+services:
+    awesomeenterprise2018-app:
+        image: awesomeenterprise2018
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
+            - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
+            - SPRING_DATASOURCE_URL=jdbc:mysql://awesomeenterprise2018-mysql:3306/awesomeenterprise2018?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - JHIPSTER_SLEEP=30 # gives time for the JHipster Registry to boot before the application
+            - SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES=awesomeenterprise2018-elasticsearch:9300
+            - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
+            - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
+        ports:
+            - 8080:8080
+    awesomeenterprise2018-mysql:
+        extends:
+            file: mysql.yml
+            service: awesomeenterprise2018-mysql
+    awesomeenterprise2018-elasticsearch:
+        extends:
+            file: elasticsearch.yml
+            service: awesomeenterprise2018-elasticsearch
+    kafka:
+        extends:
+            file: kafka.yml
+            service: kafka
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+    zookeeper:
+        extends:
+            file: kafka.yml
+            service: zookeeper
+    jhipster-registry:
+        extends:
+            file: jhipster-registry.yml
+            service: jhipster-registry
+        environment:
+            - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:./central-config/docker-config/
